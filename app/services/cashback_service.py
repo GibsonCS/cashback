@@ -44,3 +44,13 @@ async def calculate_cashback(cashbackRequest: CashbackRequest, ip_address: str, 
 def calculateVipCashback(value: float, base_cashback: float):
     return (value * base_cashback) + (value * base_cashback) * 0.10
 
+async def get_queries_cashback(ip_address: str, db: Session):
+
+    query = db.query(Cashback).filter(Cashback.ip_address == ip_address).exists()
+
+    exists = db.query(query).scalar()
+
+    if(exists):
+        return db.query(Cashback).filter(Cashback.ip_address == ip_address).all()   
+    
+    raise RuntimeWarning("Never consulted")
