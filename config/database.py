@@ -3,8 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 SQLALCHEMY_DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg2://postgres:postgres@localhost/cashback"
+    "DATABASE_URL"
+    # "postgresql+psycopg2://postgres:postgres@localhost/cashback"
 )
 
 engine = create_engine(
