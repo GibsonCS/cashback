@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Request, Depends
 from app.schemas.CashbackRequest import CashbackRequest
 from config.database import get_db
+from fastapi import HTTPException
+
 
 router = APIRouter()
 
@@ -12,8 +14,10 @@ async def handleCashback(cashback_request: CashbackRequest, request: Request, db
 
 @router.get("/cashback")
 async def handleGetQueriesCashback(request: Request, db: Session = Depends(get_db)):
-        
-        if(request.client.host == ""):
-                raise RuntimeWarning("ip not found")
-        
-        return await get_queries_cashback(request.client.host, db)
+
+    ip = request.headers.get("x-forwarded-for", request.client.host)
+
+    if not ip:
+        raise HTTPException(status_code=400, detail="IP not found")
+
+    return await get_queries_cashback(ip, db)

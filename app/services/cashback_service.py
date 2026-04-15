@@ -2,6 +2,7 @@ from app.schemas.CashbackRequest import CashbackRequest
 from app.models.cashback import Cashback
 from sqlalchemy.orm import Session
 from datetime import datetime
+from fastapi import HTTPException
 
 async def calculate_cashback(cashbackRequest: CashbackRequest, ip_address: str, db: Session):
 
@@ -46,11 +47,9 @@ def calculateVipCashback(value: float, base_cashback: float):
 
 async def get_queries_cashback(ip_address: str, db: Session):
 
-    query = db.query(Cashback).filter(Cashback.ip_address == ip_address).exists()
+    results = db.query(Cashback).filter(Cashback.ip_address == ip_address).all()
 
-    exists = db.query(query).scalar()
+    if not results:
+        raise HTTPException(status_code=404, detail="Never consulted")
 
-    if(exists):
-        return db.query(Cashback).filter(Cashback.ip_address == ip_address).all()   
-    
-    raise RuntimeWarning("Never consulted")
+    return results
